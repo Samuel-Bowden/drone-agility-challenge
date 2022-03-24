@@ -1,5 +1,5 @@
 [package]
-name = "rocket"
+name = "drone_game"
 version = "0.1.0"
 edition = "2021"
 
