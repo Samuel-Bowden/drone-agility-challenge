@@ -8,10 +8,6 @@ pub struct Drone;
 #[derive(Component)]
 pub struct Camera;
 
-pub struct SpawnTimer{
-	pub t: Timer,
-}
-
 pub fn setup_game(
     mut commands: Commands,
 ) {

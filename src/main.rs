@@ -17,7 +17,6 @@ fn main() {
     App::new()
         .insert_resource(Gravity::from(Vec3::new(0.0, -180., 0.0)))
         .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
-        .insert_resource(SpawnTimer{t: Timer::from_seconds(0.1, false)})
         .add_state(AppState::Menu)
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
