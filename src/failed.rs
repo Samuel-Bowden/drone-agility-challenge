@@ -1,11 +1,11 @@
 use bevy::prelude::*;
 use crate::AppState;
 
-pub struct TitleData {
+pub struct FailedData {
     layout: Entity,
 }
 
-pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_failed(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(UiCameraBundle::default());
 
     let layout = commands
@@ -27,31 +27,11 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Welcome",
+                        "Failed",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 100.0,
                             color: Color::WHITE,
-                        },
-                        TextAlignment::default(),
-                    ),
-                    ..Default::default()
-                });
-            parent
-                .spawn_bundle(TextBundle {
-                    style: Style {
-                        margin: Rect {
-                            top: Val::Percent(2.0),
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    },
-                    text: Text::with_section(
-                        "The aim of the game is to get from start\nto finish without crashing the drone.",
-                        TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size: 30.0,
-                            color: Color::GRAY,
                         },
                         TextAlignment::default(),
                     ),
@@ -67,7 +47,7 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Press return to start level 1.",
+                        "Press return to retry",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 30.0,
@@ -79,10 +59,10 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
                 });
         }).id();
 
-    commands.insert_resource(TitleData { layout });
+    commands.insert_resource(FailedData { layout });
 }
 
-pub fn title(
+pub fn failed(
     mut state: ResMut<State<AppState>>,
     input: Res<Input<KeyCode>>,
 ) {
@@ -91,6 +71,6 @@ pub fn title(
     }
 }
 
-pub fn cleanup_title(mut commands: Commands, title_data: Res<TitleData>) {
-    commands.entity(title_data.layout).despawn_recursive();
+pub fn cleanup_failed(mut commands: Commands, failed_data: Res<FailedData>) {
+    commands.entity(failed_data.layout).despawn_recursive();
 }

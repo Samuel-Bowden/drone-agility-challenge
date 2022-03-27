@@ -1,16 +1,17 @@
 use bevy::prelude::*;
 use heron::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::{menu::*, game::*, debug::*};
+use crate::{title::*, game::*, failed::*};
 
-mod menu;
+mod title;
 mod game;
-mod debug;
+mod failed;
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum AppState {
     Menu,
     InGame,
+    Failed,
 }
 
 fn main() {
@@ -21,20 +22,23 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_plugin(PhysicsPlugin::default())
-        .add_system_set(SystemSet::on_enter(AppState::Menu).with_system(setup_menu))
-        .add_system_set(SystemSet::on_update(AppState::Menu).with_system(menu))
-        .add_system_set(SystemSet::on_exit(AppState::Menu).with_system(cleanup_menu))
+        .add_system_set(SystemSet::on_enter(AppState::Menu).with_system(setup_title))
+        .add_system_set(SystemSet::on_update(AppState::Menu).with_system(title))
+        .add_system_set(SystemSet::on_exit(AppState::Menu).with_system(cleanup_title))
+        .add_system_set(SystemSet::on_enter(AppState::Failed).with_system(setup_failed))
+        .add_system_set(SystemSet::on_update(AppState::Failed).with_system(failed))
+        .add_system_set(SystemSet::on_exit(AppState::Failed).with_system(cleanup_failed))
         .add_system_set(
             SystemSet::on_enter(AppState::InGame)
             .with_system(setup_game)
             .with_system(spawn_drone)
             .with_system(spawn_level_1)
-            .with_system(position_text),
         )
         .add_system_set(
             SystemSet::on_update(AppState::InGame)
-                .with_system(update_position_text)
                 .with_system(drone_movement)
+                .with_system(detect_collisions)
         )
+        .add_system_set(SystemSet::on_exit(AppState::InGame).with_system(cleanup_game))
         .run();
 }
