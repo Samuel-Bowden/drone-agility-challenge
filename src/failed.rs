@@ -1,14 +1,10 @@
 use bevy::prelude::*;
 use crate::AppState;
 
-pub struct FailedData {
-    layout: Entity,
-}
-
 pub fn setup_failed(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(UiCameraBundle::default());
 
-    let layout = commands
+    commands
         .spawn_bundle(NodeBundle {
             style: Style {
                 size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
@@ -57,20 +53,23 @@ pub fn setup_failed(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ),
                     ..Default::default()
                 });
-        }).id();
-
-    commands.insert_resource(FailedData { layout });
-}
+        });
+    }
 
 pub fn failed(
     mut state: ResMut<State<AppState>>,
     input: Res<Input<KeyCode>>,
 ) {
     if input.pressed(KeyCode::Return) {
-        state.set(AppState::InGame).unwrap();
+        state.set(AppState::Game).unwrap();
     }
 }
 
-pub fn cleanup_failed(mut commands: Commands, failed_data: Res<FailedData>) {
-    commands.entity(failed_data.layout).despawn_recursive();
+pub fn cleanup_failed(
+    mut entities: Query<Entity>,
+    mut commands: Commands,
+) {
+    for entity in entities.iter_mut() {
+        commands.entity(entity).despawn();
+    }
 }

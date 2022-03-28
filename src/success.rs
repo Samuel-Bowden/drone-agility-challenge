@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::AppState;
 
-pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_success(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(UiCameraBundle::default());
 
     commands
@@ -23,31 +23,11 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Welcome",
+                        "Success",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 100.0,
                             color: Color::WHITE,
-                        },
-                        TextAlignment::default(),
-                    ),
-                    ..Default::default()
-                });
-            parent
-                .spawn_bundle(TextBundle {
-                    style: Style {
-                        margin: Rect {
-                            top: Val::Percent(2.0),
-                            ..Default::default()
-                        },
-                        ..Default::default()
-                    },
-                    text: Text::with_section(
-                        "The aim of the game is to get from the red starting podium\nto the green finishing podium - without colliding the drone\ninto anything else.",
-                        TextStyle {
-                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                            font_size: 30.0,
-                            color: Color::GRAY,
                         },
                         TextAlignment::default(),
                     ),
@@ -63,7 +43,7 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Press return to begin.",
+                        "Press return for the next level",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 30.0,
@@ -76,7 +56,7 @@ pub fn setup_title(mut commands: Commands, asset_server: Res<AssetServer>) {
         });
 }
 
-pub fn title(
+pub fn success(
     mut state: ResMut<State<AppState>>,
     input: Res<Input<KeyCode>>,
 ) {
@@ -85,7 +65,7 @@ pub fn title(
     }
 }
 
-pub fn cleanup_title(
+pub fn cleanup_success(
     mut entities: Query<Entity>,
     mut commands: Commands,
 ) {

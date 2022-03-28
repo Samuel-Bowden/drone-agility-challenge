@@ -9,6 +9,14 @@ pub struct Drone;
 #[derive(Component)]
 pub struct Camera;
 
+enum PodiumType {
+    Start,
+    Finish,
+}
+
+#[derive(Component)]
+pub struct Podium(PodiumType);
+
 pub fn setup_game(
     mut commands: Commands,
 ) {
@@ -77,7 +85,7 @@ pub fn spawn_drone(
                     outline_mode: StrokeMode::new(Color::BLACK, 0.),
                 },
                 Transform {
-                    translation: Vec3::new(-350., 50., 0.),
+                    translation: Vec3::new(-350., 25., 0.),
                     ..Default::default()
                 }
             )
@@ -144,33 +152,7 @@ pub fn spawn_level_1(
             border_radius: None,
         });
 
-    let building_left_wall = shapes::Rectangle {
-        extents: Vec2::new(10., 450.),
-        origin: shapes::RectangleOrigin::Center
-    };
-
-    commands
-        .spawn()
-        .insert_bundle(
-            GeometryBuilder::build_as(
-                &building_left_wall,
-                DrawMode::Outlined {
-                    fill_mode: FillMode::color(Color::GRAY),
-                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
-                },
-                Transform {
-                    translation: Vec3::new(-400., 225., 0.),
-                    ..Default::default()
-                }
-            )
-        )
-        .insert(RigidBody::Static)
-        .insert(CollisionShape::Cuboid {
-            half_extends: Vec3::new(5., 225., 0.),
-            border_radius: None,
-        });
-
-    let building_right_wall = shapes::Rectangle {
+    let tower1_left_wall = shapes::Rectangle {
         extents: Vec2::new(10., 400.),
         origin: shapes::RectangleOrigin::Center
     };
@@ -179,13 +161,91 @@ pub fn spawn_level_1(
         .spawn()
         .insert_bundle(
             GeometryBuilder::build_as(
-                &building_right_wall,
+                &tower1_left_wall,
                 DrawMode::Outlined {
                     fill_mode: FillMode::color(Color::GRAY),
                     outline_mode: StrokeMode::new(Color::BLACK, 0.),
                 },
                 Transform {
-                    translation: Vec3::new(-300., 200., 0.),
+                    translation: Vec3::new(-400., 205., 0.),
+                    ..Default::default()
+                }
+            )
+        )
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(5., 200., 0.),
+            border_radius: None,
+        });
+
+    let tower1_right_wall = shapes::Rectangle {
+        extents: Vec2::new(10., 400.),
+        origin: shapes::RectangleOrigin::Center
+    };
+
+    commands
+        .spawn()
+        .insert_bundle(
+            GeometryBuilder::build_as(
+                &tower1_right_wall,
+                DrawMode::Outlined {
+                    fill_mode: FillMode::color(Color::GRAY),
+                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
+                },
+                Transform {
+                    translation: Vec3::new(-300., 205., 0.),
+                    ..Default::default()
+                }
+            )
+        )
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(5., 200., 0.),
+            border_radius: None,
+        });
+
+    let tower2_left_wall = shapes::Rectangle {
+        extents: Vec2::new(10., 400.),
+        origin: shapes::RectangleOrigin::Center
+    };
+
+    commands
+        .spawn()
+        .insert_bundle(
+            GeometryBuilder::build_as(
+                &tower2_left_wall,
+                DrawMode::Outlined {
+                    fill_mode: FillMode::color(Color::GRAY),
+                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
+                },
+                Transform {
+                    translation: Vec3::new(400., 205., 0.),
+                    ..Default::default()
+                }
+            )
+        )
+        .insert(RigidBody::Static)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(5., 200., 0.),
+            border_radius: None,
+        });
+
+    let tower2_right_wall = shapes::Rectangle {
+        extents: Vec2::new(10., 400.),
+        origin: shapes::RectangleOrigin::Center
+    };
+
+    commands
+        .spawn()
+        .insert_bundle(
+            GeometryBuilder::build_as(
+                &tower2_right_wall,
+                DrawMode::Outlined {
+                    fill_mode: FillMode::color(Color::GRAY),
+                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
+                },
+                Transform {
+                    translation: Vec3::new(300., 205., 0.),
                     ..Default::default()
                 }
             )
@@ -247,26 +307,102 @@ pub fn spawn_level_1(
             half_extends: Vec3::new(500., 5., 0.),
             border_radius: None,
         });
+
+    let start = shapes::Rectangle {
+        extents: Vec2::new(80., 10.),
+        origin: shapes::RectangleOrigin::Center
+    };
+
+    commands
+        .spawn()
+        .insert_bundle(
+            GeometryBuilder::build_as(
+                &start,
+                DrawMode::Outlined {
+                    fill_mode: FillMode::color(Color::RED),
+                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
+                },
+                Transform {
+                    translation: Vec3::new(-350., 10., 0.),
+                    ..Default::default()
+                }
+            )
+        )
+        .insert(RigidBody::Static)
+        .insert(Podium(PodiumType::Start))
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(40., 5., 0.),
+            border_radius: None,
+        });
+
+    let finish = shapes::Rectangle {
+        extents: Vec2::new(80., 10.),
+        origin: shapes::RectangleOrigin::Center
+    };
+
+    commands
+        .spawn()
+        .insert_bundle(
+            GeometryBuilder::build_as(
+                &finish,
+                DrawMode::Outlined {
+                    fill_mode: FillMode::color(Color::GREEN),
+                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
+                },
+                Transform {
+                    translation: Vec3::new(350., 10., 0.),
+                    ..Default::default()
+                }
+            )
+        )
+        .insert(RigidBody::Static)
+        .insert(Podium(PodiumType::Finish))
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(40., 5., 0.),
+            border_radius: None,
+        });
 }
 
 pub fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
     mut state: ResMut<State<AppState>>,
     drones: Query<&Drone>,
+    podiums: Query<&Podium>,
 ) {
     for event in events.iter().filter(|e| e.is_started()) {
         let (e1, e2) = event.rigid_body_entities();
-        if drones.get_component::<Drone>(e1).is_ok() || drones.get_component::<Drone>(e2).is_ok() {
+
+        //Fail condition
+        if (drones.get_component::<Drone>(e1).is_ok() && !podiums.get_component::<Podium>(e2).is_ok())
+            || (drones.get_component::<Drone>(e2).is_ok() && !podiums.get_component::<Podium>(e1).is_ok()) {
             state.set(AppState::Failed).unwrap();
+        }
+
+        //Win condition
+        if drones.get_component::<Drone>(e1).is_ok() {
+            if let Ok(podium) = podiums.get_component::<Podium>(e2) {
+                if let PodiumType::Finish = podium.0 {
+                    state.set(AppState::Success).unwrap();
+                }
+            }
+        }
+
+        //Win condition
+        if drones.get_component::<Drone>(e2).is_ok() {
+            if let Ok(podium) = podiums.get_component::<Podium>(e1) {
+                if let PodiumType::Finish = podium.0 {
+                    state.set(AppState::Success).unwrap();
+                }
+            }
         }
     }
 }
 
 pub fn cleanup_game(
-    mut walls: Query<Entity>,
+    mut entities: Query<Entity>,
     mut commands: Commands,
 ) {
-    for wall in walls.iter_mut() {
-        commands.entity(wall).despawn();
+    for entity in entities.iter_mut() {
+        commands.entity(entity).despawn();
     }
 }
