@@ -64,12 +64,3 @@ pub fn failed(
         state.set(AppState::Game).unwrap();
     }
 }
-
-pub fn cleanup_failed(
-    mut entities: Query<Entity>,
-    mut commands: Commands,
-) {
-    for entity in entities.iter_mut() {
-        commands.entity(entity).despawn();
-    }
-}

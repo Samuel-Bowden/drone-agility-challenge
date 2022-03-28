@@ -397,12 +397,3 @@ pub fn detect_collisions(
         }
     }
 }
-
-pub fn cleanup_game(
-    mut entities: Query<Entity>,
-    mut commands: Commands,
-) {
-    for entity in entities.iter_mut() {
-        commands.entity(entity).despawn();
-    }
-}

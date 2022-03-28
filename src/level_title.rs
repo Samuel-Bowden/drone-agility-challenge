@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use crate::AppState;
 
-pub fn setup_success(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_level_title(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn_bundle(UiCameraBundle::default());
 
     commands
@@ -23,11 +23,31 @@ pub fn setup_success(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Success",
+                        "Level 1",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 100.0,
                             color: Color::WHITE,
+                        },
+                        TextAlignment::default(),
+                    ),
+                    ..Default::default()
+                });
+            parent
+                .spawn_bundle(TextBundle {
+                    style: Style {
+                        margin: Rect {
+                            top: Val::Percent(2.0),
+                            ..Default::default()
+                        },
+                        ..Default::default()
+                    },
+                    text: Text::with_section(
+                        "An easy level to start. Move from the first tower to the other.",
+                        TextStyle {
+                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font_size: 30.0,
+                            color: Color::GRAY,
                         },
                         TextAlignment::default(),
                     ),
@@ -43,7 +63,7 @@ pub fn setup_success(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::with_section(
-                        "Press return for the next level",
+                        "Press space to start.",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 30.0,
@@ -54,13 +74,13 @@ pub fn setup_success(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ..Default::default()
                 });
         });
-}
+    }
 
-pub fn success(
+pub fn level_title(
     mut state: ResMut<State<AppState>>,
     input: Res<Input<KeyCode>>,
 ) {
-    if input.pressed(KeyCode::Return) {
-        state.set(AppState::LevelTitle).unwrap();
+    if input.pressed(KeyCode::Space) {
+        state.set(AppState::Game).unwrap();
     }
 }
