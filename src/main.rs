@@ -15,6 +15,7 @@ pub enum AppState {
     LevelMenu,
     FailedMenu,
     SuccessMenu,
+    EndMenu,
     Game,
 }
 
@@ -43,6 +44,10 @@ fn main() {
         .add_system_set(SystemSet::on_enter(AppState::LevelMenu).with_system(menus::level::setup))
         .add_system_set(SystemSet::on_update(AppState::LevelMenu).with_system(menus::level::click))
         .add_system_set(SystemSet::on_exit(AppState::LevelMenu).with_system(cleanup::cleanup))
+        //End Menu
+        .add_system_set(SystemSet::on_enter(AppState::EndMenu).with_system(menus::end::setup))
+        .add_system_set(SystemSet::on_update(AppState::EndMenu).with_system(menus::end::click))
+        .add_system_set(SystemSet::on_exit(AppState::EndMenu).with_system(cleanup::cleanup))
         //Game
         .add_system_set(
             SystemSet::on_enter(AppState::Game)

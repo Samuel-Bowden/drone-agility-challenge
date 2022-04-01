@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use heron::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::AppState;
+use crate::{AppState, CurrentLevel};
 
 #[derive(Component)]
 pub struct Drone;
@@ -103,6 +103,7 @@ pub fn spawn_drone(
 pub fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
     mut state: ResMut<State<AppState>>,
+    mut current_level: ResMut<CurrentLevel>,
     drones: Query<&Drone>,
     podiums: Query<&Podium>,
 ) {
@@ -115,20 +116,24 @@ pub fn detect_collisions(
             state.set(AppState::FailedMenu).unwrap();
         }
 
-        //Win condition
-        if drones.get_component::<Drone>(e1).is_ok() {
-            if let Ok(podium) = podiums.get_component::<Podium>(e2) {
-                if let PodiumType::Finish = podium.0 {
-                    state.set(AppState::SuccessMenu).unwrap();
-                }
-            }
-        }
+        //Win Condition
+        let podium = 
+            if drones.get_component::<Drone>(e1).is_ok() {
+                if let Ok(podium) = podiums.get_component::<Podium>(e2) { Some(podium) } else { None }
+            } else if drones.get_component::<Drone>(e2).is_ok() {
+                if let Ok(podium) = podiums.get_component::<Podium>(e1) { Some(podium) } else { None }
+            } else {
+                None
+            };
 
-        //Win condition
-        if drones.get_component::<Drone>(e2).is_ok() {
-            if let Ok(podium) = podiums.get_component::<Podium>(e1) {
-                if let PodiumType::Finish = podium.0 {
+        if let Some(p) = podium {
+            if let PodiumType::Finish = p.0 {
+                if current_level.0 < 2 {
+                    current_level.0 += 1;
                     state.set(AppState::SuccessMenu).unwrap();
+                } else {
+                    current_level.0 = 1;
+                    state.set(AppState::EndMenu).unwrap();
                 }
             }
         }

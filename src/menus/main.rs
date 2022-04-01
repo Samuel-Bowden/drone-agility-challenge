@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-
 use crate::AppState;
 
 pub fn setup(
