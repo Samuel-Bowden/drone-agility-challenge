@@ -1,5 +1,9 @@
 # drone_game
 
+<p align="center">
+  <img src="demo.gif" alt="animated" />
+</p>
+
 A small game I'm making whilst I learn the Bevy Game Engine. The aim of the game is to get from the red starting podium to the green finishing podium - without colliding the drone into anything else.
 
 Warning - This game is not complete and is still being developed.
