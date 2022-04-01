@@ -1,55 +1,60 @@
 use bevy::prelude::*;
 use heron::prelude::*;
 use bevy_prototype_lyon::prelude::*;
-use crate::{title::*, game::*, failed::*, success::*, level_title::*, cleanup::*};
 
-mod title;
-mod level_title;
 mod game;
-mod failed;
-mod success;
 mod cleanup;
+mod menus;
+mod levels;
+
+pub struct CurrentLevel(u32);
 
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum AppState {
-    Title,
-    LevelTitle,
+    MainMenu,
+    LevelMenu,
+    FailedMenu,
+    SuccessMenu,
     Game,
-    Failed,
-    Success,
 }
 
 fn main() {
     App::new()
         .insert_resource(Gravity::from(Vec3::new(0.0, -180., 0.0)))
         .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
-        .add_state(AppState::Title)
+        .insert_resource(CurrentLevel(1))
+        .add_state(AppState::MainMenu)
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_plugin(PhysicsPlugin::default())
-        .add_system_set(SystemSet::on_enter(AppState::Title).with_system(setup_title))
-        .add_system_set(SystemSet::on_update(AppState::Title).with_system(title))
-        .add_system_set(SystemSet::on_exit(AppState::Title).with_system(cleanup))
-        .add_system_set(SystemSet::on_enter(AppState::Success).with_system(setup_success))
-        .add_system_set(SystemSet::on_update(AppState::Success).with_system(success))
-        .add_system_set(SystemSet::on_exit(AppState::Success).with_system(cleanup))
-        .add_system_set(SystemSet::on_enter(AppState::Failed).with_system(setup_failed))
-        .add_system_set(SystemSet::on_update(AppState::Failed).with_system(failed))
-        .add_system_set(SystemSet::on_exit(AppState::Failed).with_system(cleanup))
-        .add_system_set(SystemSet::on_enter(AppState::LevelTitle).with_system(setup_level_title))
-        .add_system_set(SystemSet::on_update(AppState::LevelTitle).with_system(level_title))
-        .add_system_set(SystemSet::on_exit(AppState::LevelTitle).with_system(cleanup))
+        //Main Menu
+        .add_system_set(SystemSet::on_enter(AppState::MainMenu).with_system(menus::main::setup))
+        .add_system_set(SystemSet::on_update(AppState::MainMenu).with_system(menus::main::click))
+        .add_system_set(SystemSet::on_exit(AppState::MainMenu).with_system(cleanup::cleanup))
+        //Success Menu
+        .add_system_set(SystemSet::on_enter(AppState::SuccessMenu).with_system(menus::success::setup))
+        .add_system_set(SystemSet::on_update(AppState::SuccessMenu).with_system(menus::success::click))
+        .add_system_set(SystemSet::on_exit(AppState::SuccessMenu).with_system(cleanup::cleanup))
+        //Failed Menu
+        .add_system_set(SystemSet::on_enter(AppState::FailedMenu).with_system(menus::failed::setup))
+        .add_system_set(SystemSet::on_update(AppState::FailedMenu).with_system(menus::failed::click))
+        .add_system_set(SystemSet::on_exit(AppState::FailedMenu).with_system(cleanup::cleanup))
+        //Level Menu
+        .add_system_set(SystemSet::on_enter(AppState::LevelMenu).with_system(menus::level::setup))
+        .add_system_set(SystemSet::on_update(AppState::LevelMenu).with_system(menus::level::click))
+        .add_system_set(SystemSet::on_exit(AppState::LevelMenu).with_system(cleanup::cleanup))
+        //Game
         .add_system_set(
             SystemSet::on_enter(AppState::Game)
-            .with_system(setup_game)
-            .with_system(spawn_drone)
-            .with_system(spawn_level_1)
+            .with_system(game::setup_game)
+            .with_system(game::spawn_drone)
+            .with_system(levels::spawn_level)
         )
         .add_system_set(
             SystemSet::on_update(AppState::Game)
-                .with_system(drone_movement)
-                .with_system(detect_collisions)
+                .with_system(game::drone_movement)
+                .with_system(game::detect_collisions)
         )
-        .add_system_set(SystemSet::on_exit(AppState::Game).with_system(cleanup))
+        .add_system_set(SystemSet::on_exit(AppState::Game).with_system(cleanup::cleanup))
         .run();
 }
