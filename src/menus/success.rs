@@ -51,7 +51,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .with_children(|parent| {
                     parent.spawn_bundle(TextBundle {
                         text: Text::with_section(
-                            "Next Level",
+                            "Next",
                             TextStyle {
                                 font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                 font_size: 40.0,
@@ -71,7 +71,7 @@ pub fn click(
 ) {
     for interaction in input.iter() {
         if *interaction == Interaction::Clicked {
-            state.set(AppState::Game).unwrap();
+            state.set(AppState::LevelMenu).unwrap();
         }
     }
 }
