@@ -128,7 +128,7 @@ pub fn detect_collisions(
 
         if let Some(p) = podium {
             if let PodiumType::Finish = p.0 {
-                if current_level.0 < 2 {
+                if current_level.0 < 3 {
                     current_level.0 += 1;
                     state.set(AppState::SuccessMenu).unwrap();
                 } else {
