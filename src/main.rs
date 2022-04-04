@@ -52,12 +52,12 @@ fn main() {
         .add_system_set(
             SystemSet::on_enter(AppState::Game)
             .with_system(game::setup_game)
-            .with_system(game::spawn_drone)
             .with_system(levels::spawn_level)
         )
         .add_system_set(
             SystemSet::on_update(AppState::Game)
                 .with_system(game::drone_movement)
+                .with_system(game::drone_rockets)
                 .with_system(game::detect_collisions)
         )
         .add_system_set(SystemSet::on_exit(AppState::Game).with_system(cleanup::cleanup))

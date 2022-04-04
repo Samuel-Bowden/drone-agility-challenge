@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use heron::prelude::*;
-use bevy_prototype_lyon::prelude::*;
 use crate::{AppState, CurrentLevel};
 
 #[derive(Component)]
@@ -14,14 +13,59 @@ pub enum PodiumType {
     Finish,
 }
 
+pub struct Materials {
+    drone: Handle<Image>,
+    drone_blr: Handle<Image>,
+    drone_tlr: Handle<Image>,
+    drone_tr_bl: Handle<Image>,
+    drone_tl_br: Handle<Image>,
+    drone_blsr: Handle<Image>,
+    drone_blrs: Handle<Image>,
+    drone_tlsr: Handle<Image>,
+    drone_tlrs: Handle<Image>,
+}
+
 #[derive(Component)]
 pub struct Podium(pub PodiumType);
 
 pub fn setup_game(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
 ) {
     commands.spawn().insert_bundle(OrthographicCameraBundle::new_2d()).insert(Camera);
     commands.spawn().insert_bundle(UiCameraBundle::default());
+    
+    let mat = Materials {
+        drone: asset_server.load("sprites/drone.png"),
+        drone_blr: asset_server.load("sprites/drone_blr.png"),
+        drone_tlr: asset_server.load("sprites/drone_tlr.png"),
+        drone_tr_bl: asset_server.load("sprites/drone_tr_bl.png"),
+        drone_tl_br: asset_server.load("sprites/drone_tl_br.png"),
+        drone_blsr: asset_server.load("sprites/drone_blsr.png"),
+        drone_blrs: asset_server.load("sprites/drone_blrs.png"),
+        drone_tlsr: asset_server.load("sprites/drone_tlsr.png"),
+        drone_tlrs: asset_server.load("sprites/drone_tlrs.png"),
+    };
+
+    commands
+        .spawn_bundle(SpriteBundle {
+            transform: Transform {
+                translation: Vec3::new(0.0, 20.0, 0.0),
+                ..Default::default()
+            },
+            texture: mat.drone.clone(),
+            ..Default::default()
+        })
+        .insert(RigidBody::Dynamic)
+        .insert(CollisionShape::Cuboid {
+            half_extends: Vec3::new(30., 14., 0.),
+            border_radius: None,
+        })
+        .insert(Acceleration::from_linear(Vec3::ZERO))
+        .insert(Velocity::from_linear(Vec3::ZERO))
+        .insert(Drone);
+
+    commands.insert_resource(mat);
 }
 
 pub fn drone_movement(
@@ -67,37 +111,39 @@ pub fn drone_movement(
     } 
 }
 
-pub fn spawn_drone(
-    mut commands: Commands,
+pub fn drone_rockets(
+    input: Res<Input<KeyCode>>,
+    mut drone: Query<&mut Handle<Image>, With<Drone>>,
+    sprites: Res<Materials>,
 ) {
-    let drone = shapes::Rectangle {
-        extents: Vec2::new(60., 20.),
-        origin: shapes::RectangleOrigin::Center
-    };
-
-    commands
-        .spawn()
-        .insert_bundle(
-            GeometryBuilder::build_as(
-                &drone,
-                DrawMode::Outlined {
-                    fill_mode: FillMode::color(Color::CYAN),
-                    outline_mode: StrokeMode::new(Color::BLACK, 0.),
-                },
-                Transform {
-                    translation: Vec3::new(0., 10., 0.),
-                    ..Default::default()
-                }
-            )
-        )
-        .insert(RigidBody::Dynamic)
-        .insert(CollisionShape::Cuboid {
-            half_extends: Vec3::new(30., 10., 0.),
-            border_radius: None,
-        })
-        .insert(Acceleration::from_linear(Vec3::ZERO))
-        .insert(Velocity::from_linear(Vec3::ZERO))
-        .insert(Drone);
+    if input.pressed(KeyCode::D) && input.pressed(KeyCode::H) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_blsr.clone();
+    } else if input.pressed(KeyCode::D) && input.pressed(KeyCode::A) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_blrs.clone();
+    } else if input.pressed(KeyCode::S) && input.pressed(KeyCode::H) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_tlrs.clone();
+    } else if input.pressed(KeyCode::S) && input.pressed(KeyCode::A) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_tlsr.clone();
+    } else if input.pressed(KeyCode::D) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_blr.clone();
+    } else if input.pressed(KeyCode::S) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_tlr.clone();
+    } else if input.pressed(KeyCode::H) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_tr_bl.clone();
+    } else if input.pressed(KeyCode::A) {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone_tl_br.clone();
+    } else {
+        let mut handle = drone.single_mut();
+        *handle = sprites.drone.clone();
+    }
 }
 
 pub fn detect_collisions(
