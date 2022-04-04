@@ -160,6 +160,7 @@ pub fn detect_collisions(
         if (drones.get_component::<Drone>(e1).is_ok() && !podiums.get_component::<Podium>(e2).is_ok())
             || (drones.get_component::<Drone>(e2).is_ok() && !podiums.get_component::<Podium>(e1).is_ok()) {
             state.set(AppState::FailedMenu).unwrap();
+            break;
         }
 
         //Win Condition
@@ -177,9 +178,11 @@ pub fn detect_collisions(
                 if current_level.0 < 3 {
                     current_level.0 += 1;
                     state.set(AppState::SuccessMenu).unwrap();
+                    break;
                 } else {
                     current_level.0 = 1;
                     state.set(AppState::EndMenu).unwrap();
+                    break;
                 }
             }
         }
