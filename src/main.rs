@@ -1,11 +1,22 @@
 use bevy::prelude::*;
 use heron::prelude::*;
 use bevy_prototype_lyon::prelude::*;
+use serde::{Deserialize};
+use std::fs::File;
+use std::io::BufReader;
 
 mod game;
 mod cleanup;
 mod menus;
 mod levels;
+
+#[derive(Deserialize)]
+pub struct KeyMap {
+    up: KeyCode,
+    down: KeyCode,
+    anti_cw: KeyCode,
+    cw: KeyCode,
+}
 
 pub struct CurrentLevel(u32);
 
@@ -20,10 +31,15 @@ pub enum AppState {
 }
 
 fn main() {
+    let keymap_file = File::open("keymap.ron").expect("Couldn't open the required keymap file, 'keymap.ron'");
+    let keymap_reader = BufReader::new(keymap_file);
+    let keymap: KeyMap = ron::de::from_reader(keymap_reader).expect("Error when parsing 'keymap.ron', make sure the structure of the file is correct and valid keymaps are used");
+
     App::new()
         .insert_resource(Gravity::from(Vec3::new(0.0, -180., 0.0)))
         .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
         .insert_resource(CurrentLevel(1))
+        .insert_resource(keymap)
         .add_state(AppState::MainMenu)
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)

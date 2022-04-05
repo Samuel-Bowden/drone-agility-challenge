@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use heron::prelude::*;
-use crate::{AppState, CurrentLevel};
+use crate::{AppState, CurrentLevel, KeyMap};
 
 #[derive(Component)]
 pub struct Drone;
@@ -70,6 +70,7 @@ pub fn setup_game(
 
 pub fn drone_movement(
     input: Res<Input<KeyCode>>,
+    keymap: Res<KeyMap>,
     mut q: QuerySet<(
         QueryState<(&mut Acceleration, &Transform), With<Drone>>,
         QueryState<&mut Transform, With<Camera>>
@@ -79,19 +80,19 @@ pub fn drone_movement(
     let mut thrust = 0;
 
 
-    if input.pressed(KeyCode::D) {
+    if input.pressed(keymap.up) {
         thrust += 1;
     }
 
-    if input.pressed(KeyCode::S) {
+    if input.pressed(keymap.down) {
         thrust -= 1;
     }
 
-    if input.pressed(KeyCode::A) {
+    if input.pressed(keymap.anti_cw) {
         rotation += 1;
     }
 
-    if input.pressed(KeyCode::H) {
+    if input.pressed(keymap.cw) {
         rotation -= 1;
     }
 
@@ -113,31 +114,32 @@ pub fn drone_movement(
 
 pub fn drone_rockets(
     input: Res<Input<KeyCode>>,
+    keymap: Res<KeyMap>,
     mut drone: Query<&mut Handle<Image>, With<Drone>>,
     sprites: Res<Materials>,
 ) {
-    if input.pressed(KeyCode::D) && input.pressed(KeyCode::H) {
+    if input.pressed(keymap.up) && input.pressed(keymap.cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_blsr.clone();
-    } else if input.pressed(KeyCode::D) && input.pressed(KeyCode::A) {
+    } else if input.pressed(keymap.up) && input.pressed(keymap.anti_cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_blrs.clone();
-    } else if input.pressed(KeyCode::S) && input.pressed(KeyCode::H) {
+    } else if input.pressed(keymap.down) && input.pressed(keymap.cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_tlrs.clone();
-    } else if input.pressed(KeyCode::S) && input.pressed(KeyCode::A) {
+    } else if input.pressed(keymap.down) && input.pressed(keymap.anti_cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_tlsr.clone();
-    } else if input.pressed(KeyCode::D) {
+    } else if input.pressed(keymap.up) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_blr.clone();
-    } else if input.pressed(KeyCode::S) {
+    } else if input.pressed(keymap.down) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_tlr.clone();
-    } else if input.pressed(KeyCode::H) {
+    } else if input.pressed(keymap.cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_tr_bl.clone();
-    } else if input.pressed(KeyCode::A) {
+    } else if input.pressed(keymap.anti_cw) {
         let mut handle = drone.single_mut();
         *handle = sprites.drone_tl_br.clone();
     } else {
