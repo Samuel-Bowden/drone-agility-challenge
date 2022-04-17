@@ -71,14 +71,13 @@ pub fn setup_game(
 pub fn drone_movement(
     input: Res<Input<KeyCode>>,
     keymap: Res<KeyMap>,
-    mut q: QuerySet<(
-        QueryState<(&mut Acceleration, &Transform), With<Drone>>,
-        QueryState<&mut Transform, With<Camera>>
+    mut q: ParamSet<(
+        Query<(&mut Acceleration, &Transform), With<Drone>>,
+        Query<&mut Transform, With<Camera>>
     )>,
 ) {
     let mut rotation = 0;
     let mut thrust = 0;
-
 
     if input.pressed(keymap.up) {
         thrust += 1;
@@ -96,19 +95,22 @@ pub fn drone_movement(
         rotation -= 1;
     }
 
-    let mut x = 0.;
-    let mut y = 0.;
+    let (x, y);
 
-    for (mut acceleration, transform) in q.q0().iter_mut() {
+    {
+        let mut drone_set = q.p0();
+        let (mut acceleration, transform) = drone_set.iter_mut().next().unwrap();
         acceleration.angular = AxisAngle::new(Vec3::Z, rotation as f32 * 4.);
         acceleration.linear = transform.rotation * (Vec3::Y * thrust as f32 * 400.);
         x = transform.translation.x;
         y = transform.translation.y;
     }
 
-    for mut transform in q.q1().iter_mut() {
-        transform.translation.x = x;
-        transform.translation.y = y;
+    {
+        let mut camera_set = q.p1();
+        let mut camera = camera_set.iter_mut().next().unwrap();
+        camera.translation.x = x;
+        camera.translation.y = y;
     } 
 }
 
