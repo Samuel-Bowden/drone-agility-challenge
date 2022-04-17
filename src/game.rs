@@ -76,23 +76,23 @@ pub fn drone_movement(
         Query<&mut Transform, With<Camera>>
     )>,
 ) {
-    let mut rotation = 0;
-    let mut thrust = 0;
+    let mut rotation = 0.;
+    let mut thrust = 0.;
 
     if input.pressed(keymap.up) {
-        thrust += 1;
+        thrust += 1.;
     }
 
     if input.pressed(keymap.down) {
-        thrust -= 1;
+        thrust -= 1.;
     }
 
     if input.pressed(keymap.anti_cw) {
-        rotation += 1;
+        rotation += 1.;
     }
 
     if input.pressed(keymap.cw) {
-        rotation -= 1;
+        rotation -= 1.;
     }
 
     let (x, y);
@@ -100,8 +100,8 @@ pub fn drone_movement(
     {
         let mut drone_set = q.p0();
         let (mut acceleration, transform) = drone_set.iter_mut().next().unwrap();
-        acceleration.angular = AxisAngle::new(Vec3::Z, rotation as f32 * 4.);
-        acceleration.linear = transform.rotation * (Vec3::Y * thrust as f32 * 400.);
+        acceleration.angular = AxisAngle::new(Vec3::Z, rotation * 4.);
+        acceleration.linear = transform.rotation * (Vec3::Y * thrust * 400.);
         x = transform.translation.x;
         y = transform.translation.y;
     }

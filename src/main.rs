@@ -1,3 +1,5 @@
+#![windows_subsystem = "windows"]
+
 use bevy::prelude::*;
 use heron::prelude::*;
 use bevy_prototype_lyon::prelude::*;
