@@ -1,18 +1,20 @@
+use crate::{
+    cleanup::{cleanup, CleanUp},
+    level::spawn_level,
+    AppState, CurrentLevel, KeyMap,
+};
 use bevy::prelude::*;
-use heron::prelude::*;
-use crate::{AppState, CurrentLevel, KeyMap};
+use bevy_rapier2d::prelude::*;
 
 #[derive(Component)]
 pub struct Drone;
-
-#[derive(Component)]
-pub struct Camera;
 
 pub enum PodiumType {
     Start,
     Finish,
 }
 
+#[derive(Resource)]
 pub struct Materials {
     drone: Handle<Image>,
     drone_blr: Handle<Image>,
@@ -28,13 +30,25 @@ pub struct Materials {
 #[derive(Component)]
 pub struct Podium(pub PodiumType);
 
-pub fn setup_game(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-    commands.spawn().insert_bundle(OrthographicCameraBundle::new_2d()).insert(Camera);
-    commands.spawn().insert_bundle(UiCameraBundle::default());
-    
+pub struct Config;
+
+impl Plugin for Config {
+    fn build(&self, app: &mut App) {
+        app.add_systems((setup_game, spawn_level).in_schedule(OnEnter(AppState::Game)))
+            .add_systems(
+                (
+                    drone_movement,
+                    drone_rockets,
+                    camera_tracking.after(drone_movement),
+                    detect_collisions,
+                )
+                    .in_set(OnUpdate(AppState::Game)),
+            )
+            .add_system(cleanup.in_schedule(OnExit(AppState::Game)));
+    }
+}
+
+pub fn setup_game(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mat = Materials {
         drone: asset_server.load("sprites/drone.png"),
         drone_blr: asset_server.load("sprites/drone_blr.png"),
@@ -48,7 +62,7 @@ pub fn setup_game(
     };
 
     commands
-        .spawn_bundle(SpriteBundle {
+        .spawn(SpriteBundle {
             transform: Transform {
                 translation: Vec3::new(0.0, 20.0, 0.0),
                 ..Default::default()
@@ -57,12 +71,13 @@ pub fn setup_game(
             ..Default::default()
         })
         .insert(RigidBody::Dynamic)
-        .insert(CollisionShape::Cuboid {
-            half_extends: Vec3::new(30., 14., 0.),
-            border_radius: None,
+        .insert(ExternalForce {
+            force: Vec2::new(0., 0.),
+            torque: 0.,
         })
-        .insert(Acceleration::from_linear(Vec3::ZERO))
-        .insert(Velocity::from_linear(Vec3::ZERO))
+        .insert(Collider::cuboid(30., 14.))
+        .insert(ActiveEvents::COLLISION_EVENTS)
+        .insert(CleanUp)
         .insert(Drone);
 
     commands.insert_resource(mat);
@@ -71,10 +86,8 @@ pub fn setup_game(
 pub fn drone_movement(
     input: Res<Input<KeyCode>>,
     keymap: Res<KeyMap>,
-    mut q: ParamSet<(
-        Query<(&mut Acceleration, &Transform), With<Drone>>,
-        Query<&mut Transform, With<Camera>>
-    )>,
+    mut drone: Query<(&mut ExternalForce, &Transform), With<Drone>>,
+    //mut camera: Query<&mut Transform, With<Camera>>,
 ) {
     let mut rotation = 0.;
     let mut thrust = 0.;
@@ -95,23 +108,21 @@ pub fn drone_movement(
         rotation -= 1.;
     }
 
-    let (x, y);
+    let (mut external_force, transform) = drone.single_mut();
+    let linear_acceleration = transform.rotation * (Vec3::Y * thrust * 400000.);
+    external_force.force = Vec2::new(linear_acceleration.x, linear_acceleration.y);
+    external_force.torque = rotation * 4000000.;
+}
 
-    {
-        let mut drone_set = q.p0();
-        let (mut acceleration, transform) = drone_set.iter_mut().next().unwrap();
-        acceleration.angular = AxisAngle::new(Vec3::Z, rotation * 4.);
-        acceleration.linear = transform.rotation * (Vec3::Y * thrust * 400.);
-        x = transform.translation.x;
-        y = transform.translation.y;
-    }
+pub fn camera_tracking(
+    drone: Query<&Transform, (With<Drone>, Without<Camera>)>,
+    mut camera: Query<&mut Transform, (With<Camera>, Without<Drone>)>,
+) {
+    let mut camera = camera.single_mut();
+    let drone = drone.single();
 
-    {
-        let mut camera_set = q.p1();
-        let mut camera = camera_set.iter_mut().next().unwrap();
-        camera.translation.x = x;
-        camera.translation.y = y;
-    } 
+    camera.translation.x = drone.translation.x;
+    camera.translation.y = drone.translation.y;
 }
 
 pub fn drone_rockets(
@@ -152,41 +163,51 @@ pub fn drone_rockets(
 
 pub fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
-    mut state: ResMut<State<AppState>>,
+    mut state: ResMut<NextState<AppState>>,
     mut current_level: ResMut<CurrentLevel>,
     drones: Query<&Drone>,
     podiums: Query<&Podium>,
 ) {
-    for event in events.iter().filter(|e| e.is_started()) {
-        let (e1, e2) = event.rigid_body_entities();
+    for event in events.iter() {
+        if let CollisionEvent::Started(e1, e2, _) = event {
+            //Fail condition
+            if (drones.get_component::<Drone>(*e1).is_ok()
+                && !podiums.get_component::<Podium>(*e2).is_ok())
+                || (drones.get_component::<Drone>(*e2).is_ok()
+                    && !podiums.get_component::<Podium>(*e1).is_ok())
+            {
+                state.set(AppState::FailedMenu);
+                break;
+            }
 
-        //Fail condition
-        if (drones.get_component::<Drone>(e1).is_ok() && !podiums.get_component::<Podium>(e2).is_ok())
-            || (drones.get_component::<Drone>(e2).is_ok() && !podiums.get_component::<Podium>(e1).is_ok()) {
-            state.set(AppState::FailedMenu).unwrap();
-            break;
-        }
-
-        //Win Condition
-        let podium = 
-            if drones.get_component::<Drone>(e1).is_ok() {
-                if let Ok(podium) = podiums.get_component::<Podium>(e2) { Some(podium) } else { None }
-            } else if drones.get_component::<Drone>(e2).is_ok() {
-                if let Ok(podium) = podiums.get_component::<Podium>(e1) { Some(podium) } else { None }
+            //Win Condition
+            let podium = if drones.get_component::<Drone>(*e1).is_ok() {
+                if let Ok(podium) = podiums.get_component::<Podium>(*e2) {
+                    Some(podium)
+                } else {
+                    None
+                }
+            } else if drones.get_component::<Drone>(*e2).is_ok() {
+                if let Ok(podium) = podiums.get_component::<Podium>(*e1) {
+                    Some(podium)
+                } else {
+                    None
+                }
             } else {
                 None
             };
 
-        if let Some(p) = podium {
-            if let PodiumType::Finish = p.0 {
-                if current_level.0 < 3 {
-                    current_level.0 += 1;
-                    state.set(AppState::SuccessMenu).unwrap();
-                    break;
-                } else {
-                    current_level.0 = 1;
-                    state.set(AppState::EndMenu).unwrap();
-                    break;
+            if let Some(p) = podium {
+                if let PodiumType::Finish = p.0 {
+                    if current_level.0 < 3 {
+                        current_level.0 += 1;
+                        state.set(AppState::SuccessMenu);
+                        break;
+                    } else {
+                        current_level.0 = 1;
+                        state.set(AppState::EndMenu);
+                        break;
+                    }
                 }
             }
         }

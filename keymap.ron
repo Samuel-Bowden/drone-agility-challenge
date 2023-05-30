@@ -1,6 +1,0 @@
-(
-	up: W,
-	down: S,
-	anti_cw: A,
-	cw: D,
-)
