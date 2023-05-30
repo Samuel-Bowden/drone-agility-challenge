@@ -4,10 +4,12 @@ use crate::{
 };
 use bevy::prelude::*;
 
+use super::blank_camera;
+
 pub struct Config;
 impl Plugin for Config {
     fn build(&self, app: &mut App) {
-        app.add_system(setup.in_schedule(OnEnter(AppState::LevelMenu)))
+        app.add_systems((setup, blank_camera).in_schedule(OnEnter(AppState::LevelMenu)))
             .add_system(click.in_set(OnUpdate(AppState::LevelMenu)))
             .add_system(cleanup.in_schedule(OnExit(AppState::LevelMenu)));
     }

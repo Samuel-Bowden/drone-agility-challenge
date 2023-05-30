@@ -1,12 +1,16 @@
 use crate::cleanup::CleanUp;
 use crate::{cleanup::cleanup, AppState};
-use bevy::app::AppExit;
 use bevy::prelude::*;
+
+#[cfg(not(target_family = "wasm"))]
+use bevy::app::AppExit;
+
+use super::blank_camera;
 
 pub struct Config;
 impl Plugin for Config {
     fn build(&self, app: &mut App) {
-        app.add_system(setup.in_schedule(OnEnter(AppState::MainMenu)))
+        app.add_systems((setup, blank_camera).in_schedule(OnEnter(AppState::MainMenu)))
             .add_system(click.in_set(OnUpdate(AppState::MainMenu)))
             .add_system(cleanup.in_schedule(OnExit(AppState::MainMenu)));
     }
@@ -15,6 +19,7 @@ impl Plugin for Config {
 #[derive(Component)]
 pub enum MenuButton {
     Play,
+    #[cfg(not(target_family = "wasm"))]
     Exit,
 }
 
@@ -133,12 +138,14 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 pub fn click(
     mut state: ResMut<NextState<AppState>>,
     input: Query<(&Interaction, &MenuButton), With<Button>>,
+    #[cfg(not(target_family = "wasm"))]
     mut exit: EventWriter<AppExit>,
 ) {
     for (interaction, button) in input.iter() {
         if *interaction == Interaction::Clicked {
             match button {
                 MenuButton::Play => state.set(AppState::LevelMenu),
+                #[cfg(not(target_family = "wasm"))]
                 MenuButton::Exit => exit.send(AppExit),
             }
         }

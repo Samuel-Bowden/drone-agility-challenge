@@ -4,8 +4,8 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-bevy = { version = "0.10", features = ["wayland"] }
+bevy = { version = "0.10.1", features = ["wayland"] }
 rand = "0.8"
 bevy_prototype_lyon = "0.8"
-bevy_rapier2d = { version = "0.21.0", features = ["simd-stable", "parallel"]}
+bevy_rapier2d = "0.21.0"
 bevy_editor_pls = "0.4.0"

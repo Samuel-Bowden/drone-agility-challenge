@@ -17,3 +17,9 @@ impl Plugin for Config {
             .add_plugin(success::Config);
     }
 }
+
+fn blank_camera(
+    mut drone: Query<&mut Transform, With<Camera>>,
+) {
+    drone.single_mut().translation = Vec3::ZERO;
+}

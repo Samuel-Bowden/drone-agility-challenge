@@ -1,4 +1,3 @@
-use crate::{cleanup::CleanUp, CurrentLevel};
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use bevy_rapier2d::prelude::*;
@@ -7,13 +6,10 @@ mod l1;
 mod l2;
 mod l3;
 
-pub fn spawn_level(commands: Commands, current_level: Res<CurrentLevel>) {
-    match current_level.0 {
-        1 => l1::spawn(commands),
-        2 => l2::spawn(commands),
-        3 => l3::spawn(commands),
-        _ => (),
-    }
+pub fn spawn_levels(mut commands: Commands) {
+    l1::spawn(&mut commands, (-10000., -10000.));
+    l2::spawn(&mut commands, (10000., 10000.));
+    l3::spawn(&mut commands, (-10000., 10000.));
 }
 
 pub fn get_description(current_level: u32) -> &'static str {
@@ -29,6 +25,7 @@ pub fn line(
     commands: &mut Commands,
     dimensions: (f32, f32),
     transform: (f32, f32),
+    offset: (f32, f32),
     fill_color: Color,
 ) -> Entity {
     let shape = shapes::Rectangle {
@@ -41,7 +38,7 @@ pub fn line(
             ShapeBundle {
                 path: GeometryBuilder::build_as(&shape),
                 transform: Transform {
-                    translation: Vec3::new(transform.0, transform.1, 0.),
+                    translation: Vec3::new(transform.0 + offset.0, transform.1 + offset.1, 0.),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -51,7 +48,6 @@ pub fn line(
         ))
         .insert(RigidBody::Fixed)
         .insert(Collider::cuboid(dimensions.0 / 2., dimensions.1 / 2.))
-        .insert(CleanUp)
         .id()
 }
 
@@ -59,6 +55,7 @@ pub fn shape(
     commands: &mut Commands,
     points: &Vec<Vec2>,
     transform: (f32, f32),
+    offset: (f32, f32),
     fill_color: Color,
 ) -> Entity {
     let shape = shapes::Polygon {
@@ -71,7 +68,7 @@ pub fn shape(
             ShapeBundle {
                 path: GeometryBuilder::build_as(&shape),
                 transform: Transform {
-                    translation: Vec3::new(transform.0, transform.1, 0.),
+                    translation: Vec3::new(transform.0 + offset.0, transform.1 + offset.1, 0.),
                     ..Default::default()
                 },
                 ..Default::default()
@@ -81,6 +78,5 @@ pub fn shape(
         ))
         .insert(RigidBody::Fixed)
         .insert(Collider::convex_hull(&points).unwrap())
-        .insert(CleanUp)
         .id()
 }
