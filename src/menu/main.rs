@@ -43,7 +43,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::from_section(
-                        "Welcome",
+                        "Drone Agility Challenge",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 100.0,
@@ -62,7 +62,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         ..Default::default()
                     },
                     text: Text::from_section(
-                        "The aim of the game is to get from the red starting podium\nto the green finishing podium - without colliding the drone\ninto anything else.",
+                        "The aim of the game is to get from the red starting podium\nto the green finishing podium, all without colliding the drone\ninto any obstacles.\n\nPress W to activate the bottom thrusters and S to activate\nthe top thrusters.\n\nPress D to rotate clockwise and A to rotate anti-clockwise.",
                         TextStyle {
                             font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                             font_size: 30.0,

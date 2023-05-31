@@ -1599,8 +1599,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
 
 [[package]]
-name = "drone_game"
-version = "0.3.0"
+name = "drone-agility-challenge"
+version = "0.3.1"
 dependencies = [
  "bevy",
  "bevy_editor_pls",

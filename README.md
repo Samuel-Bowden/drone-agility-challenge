@@ -1,4 +1,4 @@
-# drone_game
+# Drone Agility Challenge
 
 <p align="center">
   <img src="demo.gif" alt="animated" />
@@ -8,7 +8,7 @@ A small game I'm making whilst I learn how to use Bevy. The aim of the game is t
 
 ## Key-Mapping
 
-The movement of the drone is mapped to WASD by default. W/S accelerates the drone up and down. A/D rotates the drone anti-clockwise and clockwise. If you would like to use a different layout, you can modify this in the "keymap.ron" file (found in the root directory of the game).
+The movement of the drone is mapped to WASD by default. W/S accelerates the drone up and down. A/D rotates the drone anti-clockwise and clockwise.
 
 ## Installation
 
@@ -25,7 +25,7 @@ https://bevyengine.org/learn/book/getting-started/setup/
 
 Once the above steps are completed, clone this repository and build+run using cargo:
 ```bash
-git clone https://github.com/Sam-Bowden/drone_game
-cd drone_game
+git clone https://github.com/Samuel-Bowden/drone-agility-challenge
+cd drone-agility-challenge
 cargo run --release
 ```
