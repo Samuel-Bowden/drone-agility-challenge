@@ -4,28 +4,22 @@ use crate::{
 };
 use bevy::prelude::*;
 
-use super::blank_camera;
-
 pub struct Config;
 impl Plugin for Config {
     fn build(&self, app: &mut App) {
-        app.add_systems((setup, blank_camera).in_schedule(OnEnter(AppState::LevelMenu)))
+        app.add_system(setup.in_schedule(OnEnter(AppState::LevelMenu)))
             .add_system(click.in_set(OnUpdate(AppState::LevelMenu)))
             .add_system(cleanup.in_schedule(OnExit(AppState::LevelMenu)));
     }
 }
 
 #[derive(Component)]
-pub enum MenuButton {
+enum MenuButton {
     Play,
     Return,
 }
 
-pub fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    current_level: Res<CurrentLevel>,
-) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, current_level: Res<CurrentLevel>) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -35,7 +29,7 @@ pub fn setup(
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
-            background_color: Color::NONE.into(),
+            background_color: Color::DARK_GRAY.into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -62,11 +56,11 @@ pub fn setup(
                     ..Default::default()
                 },
                 text: Text::from_section(
-                    crate::level::get_description(current_level.0),
+                    crate::game::levels::get_description(current_level.0),
                     TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                        font_size: 30.0,
-                        color: Color::GRAY,
+                        font_size: 25.0,
+                        color: Color::ANTIQUE_WHITE,
                     },
                 ),
                 ..Default::default()
@@ -76,7 +70,7 @@ pub fn setup(
                     style: Style {
                         size: Size::new(Val::Px(350.0), Val::Px(65.0)),
                         margin: UiRect {
-                            top: Val::Percent(4.0),
+                            top: Val::Percent(2.0),
                             ..Default::default()
                         },
                         justify_content: JustifyContent::Center,
@@ -105,7 +99,7 @@ pub fn setup(
                     style: Style {
                         size: Size::new(Val::Px(350.0), Val::Px(65.0)),
                         margin: UiRect {
-                            top: Val::Percent(4.0),
+                            top: Val::Percent(2.0),
                             ..Default::default()
                         },
                         justify_content: JustifyContent::Center,
@@ -133,7 +127,7 @@ pub fn setup(
         .insert(CleanUp);
 }
 
-pub fn click(
+fn click(
     mut state: ResMut<NextState<AppState>>,
     input: Query<(&Interaction, &MenuButton), With<Button>>,
 ) {

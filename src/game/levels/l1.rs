@@ -1,5 +1,5 @@
 use super::line;
-use crate::game::{Podium, PodiumType};
+use crate::podium::*;
 use bevy::prelude::*;
 
 pub const DESC: &'static str = "An easy level to start. Move from the first tower to the other.";

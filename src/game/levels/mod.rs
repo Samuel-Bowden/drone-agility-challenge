@@ -6,7 +6,14 @@ mod l1;
 mod l2;
 mod l3;
 
-pub fn spawn_levels(mut commands: Commands) {
+pub struct Config;
+impl Plugin for Config {
+    fn build(&self, app: &mut App) {
+        app.add_system(spawn.on_startup());
+    }
+}
+
+fn spawn(mut commands: Commands) {
     l1::spawn(&mut commands, (-10000., -10000.));
     l2::spawn(&mut commands, (10000., 10000.));
     l3::spawn(&mut commands, (-10000., 10000.));
@@ -21,7 +28,7 @@ pub fn get_description(current_level: u32) -> &'static str {
     }
 }
 
-pub fn line(
+fn line(
     commands: &mut Commands,
     dimensions: (f32, f32),
     transform: (f32, f32),
@@ -51,7 +58,7 @@ pub fn line(
         .id()
 }
 
-pub fn shape(
+fn shape(
     commands: &mut Commands,
     points: &Vec<Vec2>,
     transform: (f32, f32),

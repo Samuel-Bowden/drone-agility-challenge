@@ -1,5 +1,5 @@
 use super::line;
-use crate::game::{Podium, PodiumType};
+use crate::podium::*;
 use bevy::prelude::*;
 
 pub const DESC: &'static str = "A little bit harder now, navigate down the drop.";

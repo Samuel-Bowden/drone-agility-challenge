@@ -1,5 +1,5 @@
 use super::{line, shape};
-use crate::game::{Podium, PodiumType};
+use crate::podium::*;
 use bevy::prelude::*;
 
 pub const DESC: &'static str = "The slide.";

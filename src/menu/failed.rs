@@ -14,22 +14,22 @@ impl Plugin for Config {
 }
 
 #[derive(Component)]
-pub enum MenuButton {
+enum MenuButton {
     Retry,
     Return,
 }
 
-pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                size: Size::new(Val::Percent(30.0), Val::Percent(100.0)),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
-            background_color: Color::NONE.into(),
+            background_color: Color::DARK_GRAY.into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -109,7 +109,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(CleanUp);
 }
 
-pub fn click(
+fn click(
     mut state: ResMut<NextState<AppState>>,
     input: Query<(&Interaction, &MenuButton), With<Button>>,
 ) {

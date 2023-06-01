@@ -1,6 +1,6 @@
 [package]
 name = "drone-agility-challenge"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 
 [dependencies]
@@ -8,4 +8,18 @@ bevy = { version = "0.10.1", features = ["wayland"] }
 rand = "0.8"
 bevy_prototype_lyon = "0.8"
 bevy_rapier2d = "0.21.0"
-bevy_editor_pls = "0.4.0"
+
+[profile.desktop]
+inherits = "release"
+strip = true
+lto = "fat"
+opt-level = 3
+panic = "abort"
+codegen-units = 1
+
+[profile.wasm]
+inherits = "release"
+opt-level = "z"
+lto = "thin"
+codegen-units = 1
+panic = "abort"

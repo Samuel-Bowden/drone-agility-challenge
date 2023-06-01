@@ -1,6 +1,7 @@
 use crate::{
     cleanup::{cleanup, CleanUp},
-    AppState,
+    game::LevelTime,
+    AppState, CurrentLevel,
 };
 use bevy::prelude::*;
 
@@ -13,17 +14,17 @@ impl Plugin for Config {
     }
 }
 
-pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, level_time: Res<LevelTime>) {
     commands
         .spawn(NodeBundle {
             style: Style {
-                size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
+                size: Size::new(Val::Percent(30.0), Val::Percent(100.0)),
                 align_items: AlignItems::Center,
                 justify_content: JustifyContent::Center,
                 flex_direction: FlexDirection::Column,
                 ..Default::default()
             },
-            background_color: Color::NONE.into(),
+            background_color: Color::DARK_GRAY.into(),
             ..Default::default()
         })
         .with_children(|parent| {
@@ -37,6 +38,24 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 100.0,
                         color: Color::WHITE,
+                    },
+                ),
+                ..Default::default()
+            });
+            parent.spawn(TextBundle {
+                style: Style {
+                    margin: UiRect {
+                        top: Val::Percent(2.0),
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                text: Text::from_section(
+                    format!("Elapsed Time: {}s", level_time.0.to_string()),
+                    TextStyle {
+                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                        font_size: 25.0,
+                        color: Color::ANTIQUE_WHITE,
                     },
                 ),
                 ..Default::default()
@@ -73,10 +92,22 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         .insert(CleanUp);
 }
 
-pub fn click(mut state: ResMut<NextState<AppState>>, input: Query<&Interaction, With<Button>>) {
+fn click(
+    mut state: ResMut<NextState<AppState>>,
+    input: Query<&Interaction, With<Button>>,
+    mut current_level: ResMut<CurrentLevel>,
+) {
     for interaction in input.iter() {
         if *interaction == Interaction::Clicked {
-            state.set(AppState::LevelMenu);
+            if current_level.0 < 3 {
+                current_level.0 += 1;
+                state.set(AppState::LevelMenu);
+                break;
+            } else {
+                current_level.0 = 1;
+                state.set(AppState::EndMenu);
+                break;
+            }
         }
     }
 }
