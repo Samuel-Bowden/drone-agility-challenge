@@ -1,14 +1,10 @@
 # Drone Agility Challenge
 
-<p align="center">
-  <img src="demo.gif" alt="animated" />
-</p>
-
 A small game I'm making whilst I learn how to use Bevy. The aim of the game is to get the drone from the red to the green podium without colliding into anything else.
 
 ## Key-Mapping
 
-The movement of the drone is mapped to WASD by default. W/S accelerates the drone up and down. A/D rotates the drone anti-clockwise and clockwise.
+The movement of the drone is mapped to WASD. W/S accelerates the drone up and down. A/D rotates the drone anti-clockwise and clockwise.
 
 ## Installation
 

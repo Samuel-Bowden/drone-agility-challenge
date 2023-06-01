@@ -11,10 +11,10 @@ pub struct KeyMap {
 impl Default for KeyMap {
     fn default() -> Self {
         Self {
-            up: KeyCode::W,
+            up: KeyCode::D,
             down: KeyCode::S,
             anti_cw: KeyCode::A,
-            cw: KeyCode::D,
+            cw: KeyCode::H,
         }
     }
 }
