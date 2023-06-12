@@ -1,4 +1,5 @@
 use crate::{
+    keymap::KeyMap,
     cleanup::{cleanup, CleanUp},
     AppState,
 };
@@ -8,7 +9,7 @@ pub struct Config;
 impl Plugin for Config {
     fn build(&self, app: &mut App) {
         app.add_system(setup.in_schedule(OnEnter(AppState::FailedMenu)))
-            .add_system(click.in_set(OnUpdate(AppState::FailedMenu)))
+            .add_systems((click, restart_on_movement).in_set(OnUpdate(AppState::FailedMenu)))
             .add_system(cleanup.in_schedule(OnExit(AppState::FailedMenu)));
     }
 }
@@ -107,6 +108,16 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 .insert(MenuButton::Return);
         })
         .insert(CleanUp);
+}
+
+fn restart_on_movement(
+    input: Res<Input<KeyCode>>,
+    keymap: Res<KeyMap>,
+    mut state: ResMut<NextState<AppState>>,
+) {
+    if input.any_just_pressed([keymap.up, keymap.down, keymap.cw, keymap.anti_cw]) {
+        state.set(AppState::Game)
+    }
 }
 
 fn click(
