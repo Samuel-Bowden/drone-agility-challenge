@@ -115,7 +115,7 @@ fn restart_on_movement(
     keymap: Res<KeyMap>,
     mut state: ResMut<NextState<AppState>>,
 ) {
-    if input.any_pressed([keymap.up, keymap.down, keymap.cw, keymap.anti_cw]) {
+    if input.any_just_pressed([keymap.up, keymap.down, keymap.cw, keymap.anti_cw]) {
         state.set(AppState::Game)
     }
 }
