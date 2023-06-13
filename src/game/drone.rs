@@ -147,41 +147,22 @@ fn movement(
 fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
     mut state: ResMut<NextState<AppState>>,
-    drones: Query<&Drone>,
+    drones: Query<Entity, With<Drone>>,
     podiums: Query<&Podium>,
 ) {
     for event in events.iter() {
         if let CollisionEvent::Started(e1, e2, _) = event {
-            //Fail condition
-            if (drones.get_component::<Drone>(*e1).is_ok()
-                && !podiums.get_component::<Podium>(*e2).is_ok())
-                || (drones.get_component::<Drone>(*e2).is_ok()
-                    && !podiums.get_component::<Podium>(*e1).is_ok())
-            {
-                state.set(AppState::FailedMenu);
-                break;
-            }
+            let drone_result = drones.get_single();
+            if drone_result.is_err() { break; }
 
-            //Win Condition
-            let podium = if drones.get_component::<Drone>(*e1).is_ok() {
+            if drone_result.ok().unwrap() == *e1 {
                 if let Ok(podium) = podiums.get_component::<Podium>(*e2) {
-                    Some(podium)
+                    if let PodiumType::Finish = podium.0 {
+                        state.set(AppState::SuccessMenu);
+                    }
                 } else {
-                    None
-                }
-            } else if drones.get_component::<Drone>(*e2).is_ok() {
-                if let Ok(podium) = podiums.get_component::<Podium>(*e1) {
-                    Some(podium)
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-
-            if let Some(p) = podium {
-                if let PodiumType::Finish = p.0 {
-                    state.set(AppState::SuccessMenu);
+                    state.set(AppState::FailedMenu);
+                    break;
                 }
             }
         }
