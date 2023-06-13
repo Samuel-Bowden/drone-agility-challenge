@@ -6,7 +6,7 @@ pub const DESC: &'static str = "A little bit harder now, navigate down the drop.
 
 pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     let start = line(commands, (80., 10.), (0., 0.), offset, Color::RED); // Start
-    commands.entity(start).insert(Podium(PodiumType::Start));
+    commands.entity(start).insert(Podium::Start);
 
     // Start Box
     line(commands, (140., 10.), (0., -10.), offset, Color::WHITE); // Bottom
@@ -37,5 +37,5 @@ pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     line(commands, (10., 140.), (400., -1930.), offset, Color::WHITE); // Right
 
     let finish = line(commands, (80., 10.), (330., -1995.), offset, Color::GREEN); // Finish
-    commands.entity(finish).insert(Podium(PodiumType::Finish));
+    commands.entity(finish).insert(Podium::Finish);
 }

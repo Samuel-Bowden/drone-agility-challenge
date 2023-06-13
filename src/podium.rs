@@ -1,9 +1,7 @@
 use bevy::prelude::*;
 
-pub enum PodiumType {
+#[derive(Component)]
+pub enum Podium {
     Start,
     Finish,
 }
-
-#[derive(Component)]
-pub struct Podium(pub PodiumType);

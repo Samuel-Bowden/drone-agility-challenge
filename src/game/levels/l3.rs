@@ -6,7 +6,7 @@ pub const DESC: &'static str = "The slide.";
 
 pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     let start = line(commands, (80., 10.), (0., 0.), offset, Color::RED); // Start
-    commands.entity(start).insert(Podium(PodiumType::Start));
+    commands.entity(start).insert(Podium::Start);
 
     // Start Box
     line(commands, (400., 10.), (0., -10.), offset, Color::WHITE); // Bottom
@@ -61,5 +61,5 @@ pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     line(commands, (400., 10.), (4400., -300.), offset, Color::WHITE); // Top
 
     let finish = line(commands, (80., 10.), (4400., -690.), offset, Color::GREEN); // Finish
-    commands.entity(finish).insert(Podium(PodiumType::Finish));
+    commands.entity(finish).insert(Podium::Finish);
 }

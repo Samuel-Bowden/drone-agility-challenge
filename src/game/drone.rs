@@ -148,21 +148,17 @@ fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
     mut state: ResMut<NextState<AppState>>,
     drones: Query<Entity, With<Drone>>,
-    podiums: Query<&Podium>,
+    podiums: Query<(Entity, &Podium)>,
 ) {
     for event in events.iter() {
         if let CollisionEvent::Started(e1, e2, _) = event {
-            let drone_result = drones.get_single();
-            if drone_result.is_err() { break; }
+            let Ok(drone) = drones.get_single() else { break; };
 
-            if drone_result.ok().unwrap() == *e1 {
-                if let Ok(podium) = podiums.get_component::<Podium>(*e2) {
-                    if let PodiumType::Finish = podium.0 {
-                        state.set(AppState::SuccessMenu);
-                    }
-                } else {
-                    state.set(AppState::FailedMenu);
-                    break;
+            if drone == *e1 {
+                match podiums.iter().find_map(|x| (x.0 == *e2).then_some(x.1)) {
+                    Some(Podium::Start) => (),
+                    Some(Podium::Finish) => state.set(AppState::SuccessMenu),
+                    None => state.set(AppState::FailedMenu),
                 }
             }
         }
@@ -207,9 +203,9 @@ fn rockets(
 
 fn camera_tracking(
     drone: Query<&Transform, (With<Drone>, Without<Camera>)>,
-    mut camera: Query<&mut Transform, (With<Camera>, Without<Drone>)>,
+    mut cameras: Query<&mut Transform, (With<Camera>, Without<Drone>)>,
 ) {
-    let mut camera = camera.single_mut();
+    let mut camera = cameras.single_mut();
     let drone = drone.single();
 
     camera.translation.x = drone.translation.x;
