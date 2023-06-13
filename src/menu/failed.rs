@@ -1,6 +1,6 @@
 use crate::{
-    keymap::KeyMap,
     cleanup::{cleanup, CleanUp},
+    keymap::KeyMap,
     AppState,
 };
 use bevy::prelude::*;

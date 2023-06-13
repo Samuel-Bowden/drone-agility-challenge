@@ -147,41 +147,18 @@ fn movement(
 fn detect_collisions(
     mut events: EventReader<CollisionEvent>,
     mut state: ResMut<NextState<AppState>>,
-    drones: Query<&Drone>,
-    podiums: Query<&Podium>,
+    drones: Query<Entity, With<Drone>>,
+    podiums: Query<(Entity, &Podium)>,
 ) {
     for event in events.iter() {
         if let CollisionEvent::Started(e1, e2, _) = event {
-            //Fail condition
-            if (drones.get_component::<Drone>(*e1).is_ok()
-                && !podiums.get_component::<Podium>(*e2).is_ok())
-                || (drones.get_component::<Drone>(*e2).is_ok()
-                    && !podiums.get_component::<Podium>(*e1).is_ok())
-            {
-                state.set(AppState::FailedMenu);
-                break;
-            }
+            let Ok(drone) = drones.get_single() else { break; };
 
-            //Win Condition
-            let podium = if drones.get_component::<Drone>(*e1).is_ok() {
-                if let Ok(podium) = podiums.get_component::<Podium>(*e2) {
-                    Some(podium)
-                } else {
-                    None
-                }
-            } else if drones.get_component::<Drone>(*e2).is_ok() {
-                if let Ok(podium) = podiums.get_component::<Podium>(*e1) {
-                    Some(podium)
-                } else {
-                    None
-                }
-            } else {
-                None
-            };
-
-            if let Some(p) = podium {
-                if let PodiumType::Finish = p.0 {
-                    state.set(AppState::SuccessMenu);
+            if drone == *e1 {
+                match podiums.iter().find_map(|x| (x.0 == *e2).then_some(x.1)) {
+                    Some(Podium::Start) => (),
+                    Some(Podium::Finish) => state.set(AppState::SuccessMenu),
+                    None => state.set(AppState::FailedMenu),
                 }
             }
         }
@@ -226,9 +203,9 @@ fn rockets(
 
 fn camera_tracking(
     drone: Query<&Transform, (With<Drone>, Without<Camera>)>,
-    mut camera: Query<&mut Transform, (With<Camera>, Without<Drone>)>,
+    mut cameras: Query<&mut Transform, (With<Camera>, Without<Drone>)>,
 ) {
-    let mut camera = camera.single_mut();
+    let mut camera = cameras.single_mut();
     let drone = drone.single();
 
     camera.translation.x = drone.translation.x;

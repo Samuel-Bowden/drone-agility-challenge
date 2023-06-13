@@ -41,24 +41,27 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 ),
                 ..Default::default()
             });
-            parent.spawn(TextBundle {
-                style: Style {
-                    margin: UiRect {
-                        top: Val::Percent(2.0),
+            parent.spawn(
+                TextBundle {
+                    style: Style {
+                        margin: UiRect {
+                            top: Val::Percent(2.0),
+                            ..Default::default()
+                        },
                         ..Default::default()
                     },
+                    text: Text::from_section(
+                        "Well done!\nYou have completed all the levels.",
+                        TextStyle {
+                            font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                            font_size: 20.0,
+                            color: Color::ANTIQUE_WHITE,
+                        },
+                    ),
                     ..Default::default()
-                },
-                text: Text::from_section(
-                    "Well done!\nYou have completed all the levels.",
-                    TextStyle {
-                        font: asset_server.load("fonts/FiraSans-Bold.ttf"),
-                        font_size: 20.0,
-                        color: Color::ANTIQUE_WHITE,
-                    },
-                ),
-                ..Default::default()
-            }.with_text_alignment(TextAlignment::Center));
+                }
+                .with_text_alignment(TextAlignment::Center),
+            );
             parent
                 .spawn(ButtonBundle {
                     style: Style {
