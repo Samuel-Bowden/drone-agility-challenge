@@ -1,6 +1,7 @@
 use crate::{
     cleanup::{cleanup, CleanUp},
-    AppState, CurrentLevel,
+    game::levels::Levels,
+    AppState,
 };
 use bevy::prelude::*;
 
@@ -19,7 +20,7 @@ enum MenuButton {
     Return,
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>, current_level: Res<CurrentLevel>) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, levels: Res<Levels>) {
     commands
         .spawn(NodeBundle {
             style: Style {
@@ -38,7 +39,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, current_level: 
                     ..Default::default()
                 },
                 text: Text::from_section(
-                    format!("Level {}", current_level.0),
+                    format!("Level {}", levels.get_current_number()),
                     TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 100.0,
@@ -56,7 +57,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, current_level: 
                     ..Default::default()
                 },
                 text: Text::from_section(
-                    crate::game::levels::get_description(current_level.0),
+                    levels.get_current().description,
                     TextStyle {
                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                         font_size: 25.0,

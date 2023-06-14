@@ -1,10 +1,16 @@
-use super::{line, shape};
+use super::{builder_func::*, Level};
 use crate::podium::*;
 use bevy::prelude::*;
 
-pub const DESC: &'static str = "The slide.";
+pub fn new() -> Level {
+    Level {
+        description: "The slide.",
+        offset: (-10000., 10000.),
+        spawn,
+    }
+}
 
-pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
+fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     let start = line(commands, (80., 10.), (0., 0.), offset, Color::RED); // Start
     commands.entity(start).insert(Podium::Start);
 

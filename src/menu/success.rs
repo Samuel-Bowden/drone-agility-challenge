@@ -1,7 +1,7 @@
 use crate::{
     cleanup::{cleanup, CleanUp},
-    game::LevelTime,
-    AppState, CurrentLevel,
+    game::{levels::Levels, LevelTime},
+    AppState,
 };
 use bevy::prelude::*;
 
@@ -95,16 +95,15 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, level_time: Res
 fn click(
     mut state: ResMut<NextState<AppState>>,
     input: Query<&Interaction, With<Button>>,
-    mut current_level: ResMut<CurrentLevel>,
+    mut levels: ResMut<Levels>,
 ) {
     for interaction in input.iter() {
         if *interaction == Interaction::Clicked {
-            if current_level.0 < 3 {
-                current_level.0 += 1;
+            if levels.next_level() {
                 state.set(AppState::LevelMenu);
                 break;
             } else {
-                current_level.0 = 1;
+                levels.back_to_start();
                 state.set(AppState::EndMenu);
                 break;
             }

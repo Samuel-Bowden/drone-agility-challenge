@@ -1,6 +1,8 @@
-use crate::{keymap::KeyMap, podium::*, AppState, CurrentLevel};
+use crate::{keymap::KeyMap, podium::*, AppState};
 use bevy::prelude::*;
 use bevy_rapier2d::prelude::*;
+
+use super::levels::Levels;
 
 #[derive(Resource)]
 struct DroneMaterials {
@@ -75,17 +77,12 @@ fn spawn(mut commands: Commands, asset_server: Res<AssetServer>) {
 }
 
 fn teleport_to_level_start(
-    current_level: Res<CurrentLevel>,
+    levels: Res<Levels>,
     mut drone: Query<(&mut Transform, &mut Velocity, &mut ExternalForce), With<Drone>>,
 ) {
     let (mut transform, mut velocity, mut external_force) = drone.single_mut();
 
-    match current_level.0 {
-        1 => transform.translation = Vec3::new(-10000., -9980., 0.),
-        2 => transform.translation = Vec3::new(10000., 10020., 0.),
-        3 => transform.translation = Vec3::new(-10000., 10020., 0.),
-        _ => panic!("Invalid Level"),
-    }
+    transform.translation = levels.get_drone_spawn_position();
 
     transform.rotation = Quat::IDENTITY;
 

@@ -11,9 +11,6 @@ mod keymap;
 mod menu;
 mod podium;
 
-#[derive(Resource)]
-pub struct CurrentLevel(u32);
-
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Default, States)]
 pub enum AppState {
     #[default]
@@ -28,7 +25,6 @@ pub enum AppState {
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0., 0., 0.)))
-        .insert_resource(CurrentLevel(1))
         .insert_resource(KeyMap::default())
         .add_system(spawn_camera.on_startup())
         .add_state::<AppState>()

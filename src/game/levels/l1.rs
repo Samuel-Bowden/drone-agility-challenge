@@ -1,10 +1,16 @@
-use super::line;
+use super::{builder_func::*, Level};
 use crate::podium::*;
 use bevy::prelude::*;
 
-pub const DESC: &'static str = "An easy level to start. Move from the first tower to the other.";
+pub fn new() -> Level {
+    Level {
+        description: "An easy level to start. Move from the first tower to the other",
+        offset: (-10000., -10000.),
+        spawn,
+    }
+}
 
-pub fn spawn(commands: &mut Commands, offset: (f32, f32)) {
+fn spawn(commands: &mut Commands, offset: (f32, f32)) {
     line(commands, (1000., 10.), (350., -15.), offset, Color::WHITE); // Floor
     line(commands, (10., 1000.), (-145., 485.), offset, Color::WHITE); // Left Wall
     line(commands, (10., 1000.), (845., 485.), offset, Color::WHITE); // Right Wall
