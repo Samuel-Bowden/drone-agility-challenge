@@ -7,6 +7,7 @@ pub fn new() -> Level {
         description: "A little bit harder now, navigate down the drop.",
         offset: (10000., 10000.),
         spawn,
+        unlocked: false,
     }
 }
 

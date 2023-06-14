@@ -7,6 +7,7 @@ pub fn new() -> Level {
         description: "An easy level to start. Move from the first tower to the other",
         offset: (-10000., -10000.),
         spawn,
+        unlocked: true,
     }
 }
 

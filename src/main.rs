@@ -16,6 +16,7 @@ pub enum AppState {
     #[default]
     MainMenu,
     LevelMenu,
+    AllLevelsMenu,
     FailedMenu,
     SuccessMenu,
     EndMenu,

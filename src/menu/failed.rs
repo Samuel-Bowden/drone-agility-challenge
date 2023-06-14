@@ -89,7 +89,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                         align_items: AlignItems::Center,
                         ..Default::default()
                     },
-                    background_color: Color::rgb(0.15, 0.15, 0.15).into(),
+                    background_color: Color::rgb(0.6, 0.07, 0.0).into(),
                     ..Default::default()
                 })
                 .with_children(|parent| {

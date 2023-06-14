@@ -17,6 +17,7 @@ impl Plugin for Config {
 #[derive(Component)]
 enum MenuButton {
     Play,
+    AllLevels,
     Return,
 }
 
@@ -35,9 +36,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, levels: Res<Lev
         })
         .with_children(|parent| {
             parent.spawn(TextBundle {
-                style: Style {
-                    ..Default::default()
-                },
                 text: Text::from_section(
                     format!("Level {}", levels.get_current_number()),
                     TextStyle {
@@ -113,6 +111,35 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>, levels: Res<Lev
                 .with_children(|parent| {
                     parent.spawn(TextBundle {
                         text: Text::from_section(
+                            "Choose Level",
+                            TextStyle {
+                                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                                font_size: 40.0,
+                                color: Color::rgb(0.9, 0.9, 0.9),
+                            },
+                        ),
+                        ..Default::default()
+                    });
+                })
+                .insert(MenuButton::AllLevels);
+            parent
+                .spawn(ButtonBundle {
+                    style: Style {
+                        size: Size::new(Val::Px(350.0), Val::Px(65.0)),
+                        margin: UiRect {
+                            top: Val::Percent(2.0),
+                            ..Default::default()
+                        },
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..Default::default()
+                    },
+                    background_color: Color::rgb(0.6, 0.07, 0.0).into(),
+                    ..Default::default()
+                })
+                .with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text::from_section(
                             "Return to main menu",
                             TextStyle {
                                 font: asset_server.load("fonts/FiraSans-Bold.ttf"),
@@ -136,6 +163,7 @@ fn click(
         if *interaction == Interaction::Clicked {
             match button {
                 MenuButton::Play => state.set(AppState::Game),
+                MenuButton::AllLevels => state.set(AppState::AllLevelsMenu),
                 MenuButton::Return => state.set(AppState::MainMenu),
             }
         }

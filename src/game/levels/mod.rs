@@ -23,12 +23,13 @@ pub struct Level {
     pub description: &'static str,
     offset: (f32, f32),
     spawn: fn(commands: &mut Commands, offset: (f32, f32)),
+    pub unlocked: bool,
 }
 
 #[derive(Resource)]
 pub struct Levels {
     current: usize,
-    levels: [Level; 3],
+    pub levels: [Level; 3],
 }
 
 impl Levels {
@@ -41,10 +42,15 @@ impl Levels {
     pub fn next_level(&mut self) -> bool {
         if self.current < self.levels.len() - 1 {
             self.current += 1;
+            self.levels[self.current].unlocked = true;
             true
         } else {
             false
         }
+    }
+
+    pub fn set_level(&mut self, level: usize) {
+        self.current = level;
     }
 
     pub fn back_to_start(&mut self) {
@@ -56,7 +62,7 @@ impl Levels {
     }
 
     pub fn get_drone_spawn_position(&self) -> Vec3 {
-        let offset = self.get_current().offset;
+        let offset = self.levels[self.current].offset;
         Vec3::new(offset.0, offset.1 + 20., 0.)
     }
 

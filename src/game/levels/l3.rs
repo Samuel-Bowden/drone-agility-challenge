@@ -7,6 +7,7 @@ pub fn new() -> Level {
         description: "The slide.",
         offset: (-10000., 10000.),
         spawn,
+        unlocked: false,
     }
 }
 
