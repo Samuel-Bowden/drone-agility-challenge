@@ -9,10 +9,6 @@ The aim of the game is to fly the drone from the red to the green podium without
 
 The movement of the drone is mapped to WASD. W/S activates the bottom and top thrusters. A/D rotates the drone anti-clockwise and clockwise.
 
-## Playing
-
-The game can be played on my website at https://samuelbowden.com/games/drone-agility-challenge, or it can be installed natively to devices running Windows, Linux and macOS with the instructions below.
-
 ## Installation
 
 See the releases section for pre-compiled versions of the game. If a precompiled version is not available for your platform, please follow the compilation instructions below.
